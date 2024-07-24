@@ -80,7 +80,7 @@ router.get('/:email', jwtAuthMiddleware, async (req, res) => {
 });
 
 // Delete user profile (requires authentication)
-router.delete('/delete', jwtAuthMiddleware, async (req, res) => {
+router.delete('/delete',  async (req, res) => {
   try {
     const { email } = req.body; 
     if (!email) {
