@@ -2,8 +2,9 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const Person = require('./../models/Person');
-const { generateToken } = require('./../jwt');
+const { generateToken, jwtAuthMiddleware } = require('./../jwt');
 
+// Signup route
 router.post('/signup', async (req, res) => {
   try {
     const { email } = req.body;
@@ -32,7 +33,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-
+// Login route
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -62,7 +63,8 @@ router.post('/login', async (req, res) => {
   }
 });
 
-router.get('/:email', async (req, res) => {
+// Get user profile (requires authentication)
+router.get('/:email', jwtAuthMiddleware, async (req, res) => {
   try {
     const email = req.params.email;
     const data = await Person.findOne({ email: email });
@@ -77,7 +79,8 @@ router.get('/:email', async (req, res) => {
   }
 });
 
-router.delete('/delete', async (req, res) => {
+// Delete user profile (requires authentication)
+router.delete('/delete', jwtAuthMiddleware, async (req, res) => {
   try {
     const { email } = req.body; 
     if (!email) {
