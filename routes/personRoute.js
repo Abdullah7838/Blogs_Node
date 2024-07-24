@@ -63,7 +63,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// Get user profile (requires authentication)
+
 router.get('/:email', jwtAuthMiddleware, async (req, res) => {
   try {
     const email = req.params.email;
@@ -78,6 +78,7 @@ router.get('/:email', jwtAuthMiddleware, async (req, res) => {
     return res.status(500).json({ error: 'Internal error in person profile' });
   }
 });
+
 
 // Delete user profile (requires authentication)
 router.delete('/delete',  async (req, res) => {
