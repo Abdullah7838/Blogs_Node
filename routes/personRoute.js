@@ -6,6 +6,12 @@ const { generateToken } = require('./../jwt');
 
 router.post('/signup', async (req, res) => {
   try {
+    const { email } = req.body;
+    const existingPerson = await Person.findOne({ email: email });
+    if (existingPerson) {
+      return res.status(400).json({ error: 'Email already exists' });
+    }
+    
     const data = req.body;
     const salt = await bcrypt.genSalt(10);
     data.password = await bcrypt.hash(data.password, salt);
@@ -25,6 +31,7 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ error: 'Internal Error in signup' });
   }
 });
+
 
 router.post('/login', async (req, res) => {
   try {
