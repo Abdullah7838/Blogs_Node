@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const Person = require('./../models/Person');
+const { generateToken } = require('./../jwt');
 
 router.post('/signup', async (req, res) => {
   try {
@@ -10,8 +11,15 @@ router.post('/signup', async (req, res) => {
     data.password = await bcrypt.hash(data.password, salt);
     const newPerson = new Person(data);
     const response = await newPerson.save();
+    
+    const payload = {
+      id: response.id,
+      email: response.email
+    };
+    const token = generateToken(payload);
+    
     console.log('Signup Done');
-    res.status(200).json(response);
+    res.status(200).json({ response: response, token: token });
   } catch (err) {
     console.log('Error in SignUp Person:', err.message); 
     res.status(500).json({ error: 'Internal Error in signup' });
@@ -28,13 +36,19 @@ router.post('/login', async (req, res) => {
     }
 
     const isMatch = await bcrypt.compare(password, person.password);
-    if (isMatch) {
-      console.log('Login Successful');
-      return res.status(200).json({ message: 'Login Successful' });
-    } else {
-      console.log('Password mismatch');
-      return res.status(401).json({ error: 'Password mismatch' });
+    if (!isMatch) {
+      console.log('Invalid password');
+      return res.status(400).json({ message: 'Invalid password' });
     }
+
+    const payload = {
+      id: person.id,
+      email: person.email
+    };
+    const token = generateToken(payload);
+
+    console.log('Login Successful');
+    res.status(200).json({ message: 'Login Successful', token: token });
   } catch (err) {
     console.error('Error in Login Person:', err.message); 
     return res.status(500).json({ error: 'Internal Error in person login' });
@@ -73,6 +87,5 @@ router.delete('/delete', async (req, res) => {
     return res.status(500).json({ error: 'Internal error in deleting profile' });
   }
 });
-
 
 module.exports = router;

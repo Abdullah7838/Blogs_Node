@@ -5,13 +5,16 @@ const bodyParser = require('body-parser')
 app.use(bodyParser.json());
 require('dotenv').config();
 const cors = require('cors');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3009;
  
 app.use(cors());
 const blogRoute = require('./routes/blogRoute');
 app.use('/blogs',blogRoute);
 const personRoute = require('./routes/personRoute');
 app.use('/person',personRoute)
+const adminRoute = require('./routes/adminRoute');
+app.use('/admin',adminRoute)
+
 
 const logRequest = (req,res,next)=>{
     console.log(`[${new Date().toLocaleString()}] ${req.originalUrl}`);
