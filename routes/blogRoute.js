@@ -54,4 +54,27 @@ router.get('/show/:id', async(req,res)=>{
         res.send('Hello World!')}
        catch(err){console.log("Error in geting /")}
        })
+
+router.delete('/:id',async (req,res)=>{
+    try{
+    const ID = req.params.id;
+    if(!ID){
+        console.log(" Blog Id is requires")
+        res.status(500).json({message:"Id requires"})
+    }
+    const Find =await Blog.findById(ID)
+    if(!Find){
+        console.log(" Blog Id not Found")
+        res.status(500).json({message:"Invalid Id"})
+    }
+    const Done =await Blog.findByIdAndDelete(ID)
+    res.status(200).json({message:"Deleted"})
+}
+catch(err){
+        console.error('Error in Deleting blogs:', err); 
+        res.status(500).json({ error: 'Error in deleting blogs' });
+}
+})
+
+
 module.exports=router;
