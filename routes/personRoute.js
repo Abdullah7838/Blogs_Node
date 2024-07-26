@@ -73,7 +73,9 @@ router.get('/:email',jwtAuthMiddleware, async (req, res) => {
       return res.status(404).json({ message: 'Email profile not found' });
     }
     const payload ={
-      email:data.email
+      email:data.email,
+      name:data.name,
+      age:data.age
     }
     const Token = generateToken(payload);
     res.json({Token})
