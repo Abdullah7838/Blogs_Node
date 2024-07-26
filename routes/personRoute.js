@@ -64,7 +64,7 @@ router.post('/login', async (req, res) => {
 });
 
 
-router.get('/:email', async (req, res) => {
+router.get('/:email',jwtAuthMiddleware, async (req, res) => {
   try {
     const email = req.params.email;
     const data = await Person.findOne({ email: email });
@@ -72,7 +72,11 @@ router.get('/:email', async (req, res) => {
       console.log("Person email profile not found");
       return res.status(404).json({ message: 'Email profile not found' });
     }
-    res.status(200).json(data);
+    const payload ={
+      email:data.email
+    }
+    const Token = generateToken(payload);
+    res.json({Token})
   } catch (err) {
     console.error('Error in Profile Person:', err.message); 
     return res.status(500).json({ error: 'Internal error in person profile' });
