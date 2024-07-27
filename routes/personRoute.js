@@ -2,12 +2,13 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const router = express.Router();
 const Person = require('./../models/Person');
+const {Mail} = require('./../helpers/Mail');
 const { generateToken, jwtAuthMiddleware } = require('./../jwt');
 
 // Signup route
 router.post('/signup', async (req, res) => {
   try {
-    const { email } = req.body;
+    const { name , age , email , password } = req.body;
     const existingPerson = await Person.findOne({ email: email });
     if (existingPerson) {
       return res.status(400).json({ error: 'Email already exists' });
@@ -24,7 +25,7 @@ router.post('/signup', async (req, res) => {
       email: response.email
     };
     const token = generateToken(payload);
-    
+   await Mail(email, name)
     console.log('Signup Done');
     res.status(200).json({ response: response, token: token });
   } catch (err) {
