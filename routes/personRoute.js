@@ -99,4 +99,27 @@ router.delete('/delete',  async (req, res) => {
   }
 });
 
+router.post('/cpass',async(req,res)=>{
+  try{
+  const {email,password,newpassword} = req.body;
+  const Email =await Person.findOne({email:email})
+  if(!Email){
+    return res.status(404).json({ message: 'Email not found' });
+  }
+  
+    const isMatch = await bcrypt.compare(password,Email.password)
+    if(!isMatch){
+    return res.status(404).json({ message: 'Password not match' });
+  }
+  const newpass = newpassword;
+  const hashpass = await bcrypt.hash(newpass,10);
+  Email.password = hashpass
+  await Email.save();
+  return res.status(200).json({ message: 'Password changed successfully' });
+  }catch(err){
+    console.error('Error in Changing Password:', err.message); 
+    return res.status(500).json({ error: 'Internal error in Changing password' });
+  }
+});
+
 module.exports = router;
