@@ -2,7 +2,7 @@ const express =require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const Admin = require('../models/admin')
-
+const { generateToken, jwtAuthMiddleware } = require('./../jwt');
 router.post('/account', async(req,res)=>{
     try{
     const data = req.body;
@@ -10,7 +10,12 @@ router.post('/account', async(req,res)=>{
     data.password =await bcrypt.hash(data.password , salt);
     const newAdmin = new Admin(data)
     const response = await newAdmin.save();
-    res.status(200).json(response)
+    const payload={
+       id: data.id,
+       email: data.email
+    }
+    const token = generateToken(payload)
+    res.status(200).json({response:response,token:token})
     console.log('signup to server sucessfully')
 
   }catch(err){
@@ -30,8 +35,12 @@ router.post('/login', async(req,res)=>{
     }
     const isMatch = await bcrypt.compare(password, admin.password);
     if(isMatch){
-        console.log("Admin Sucessfully Login");
-        res.status(200).json({message:"Admin Sucessfully Login "})
+        const payload={
+            id: admin.id,
+            email:admin.email
+         }
+         const token = generateToken(payload)
+         res.status(200).json({msg:"Sucessfully Login",token:token})
     }
     else{
         console.log('Sorry You cannot acess')
