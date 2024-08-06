@@ -24,7 +24,7 @@ const jwtAuthMiddleware = (req, res, next) => {
 
 // Generate Token
 const generateToken = (userData) => {
-  return jwt.sign(userData, process.env.JWT_KEY, { expiresIn: '1y' });
+  return jwt.sign(userData, process.env.JWT_KEY, { expiresIn: '10000' });
 }
 
 module.exports = {

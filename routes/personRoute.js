@@ -65,7 +65,7 @@ router.post('/login', async (req, res) => {
 });
 
 
-router.get('/:email', async (req, res) => {
+router.get('/:email',jwtAuthMiddleware, async (req, res) => {
   try {
     const email = req.params.email;
     const data = await Person.findOne({ email: email });
